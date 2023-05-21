@@ -1,0 +1,45 @@
+{
+  "name": "redux-thaga",
+  "version": "0.1.0",
+  "description": "redux middleware for redux-saga with redux-thunk capabilities",
+  "main": "dist/cjs/redux-thaga.cjs",
+  "module": "dist/redux-thaga.legacy-esm.js",
+  "types": "dist/redux-thaga.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/redux-thaga.d.ts",
+      "import": "./dist/redux-thaga.mjs",
+      "default": "./dist/cjs/redux-thaga.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup",
+    "format": "prettier --write \"{src,examples}/**/*.{js,ts}\"",
+    "version": "echo $npm_package_version"
+  },
+  "keywords": [
+    "redux",
+    "redux-saga",
+    "redux-thunk"
+  ],
+  "author": "Vishnu Singh",
+  "license": "MIT",
+  "devDependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "prettier": "^2.8.8",
+    "redux-saga": "^1.2.3",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "@reduxjs/toolkit": ">= 1",
+    "redux-saga": ">= 1"
+  }
+}
