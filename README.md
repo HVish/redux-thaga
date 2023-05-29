@@ -1,5 +1,7 @@
 # Redux thaga
 
+> :warning: This package is under development.
+
 This redux middleware enhances redux-saga with redux-thunk capabilites.
 
 ## Usage
