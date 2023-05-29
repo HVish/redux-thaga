@@ -2,6 +2,13 @@
   "name": "redux-thaga",
   "version": "0.1.0",
   "description": "redux middleware for redux-saga with redux-thunk capabilities",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HVish/redux-thaga"
+  },
+  "bugs": {
+    "url": "https://github.com/HVish/redux-thaga/issues"
+  },
   "main": "dist/cjs/redux-thaga.cjs",
   "module": "dist/redux-thaga.legacy-esm.js",
   "types": "dist/redux-thaga.d.ts",
