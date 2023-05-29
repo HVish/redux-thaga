@@ -1,5 +1,5 @@
 {
-  "name": "redux-thaga",
+  "name": "@hvish/redux-thaga",
   "version": "0.1.0",
   "description": "redux middleware for redux-saga with redux-thunk capabilities",
   "repository": {
