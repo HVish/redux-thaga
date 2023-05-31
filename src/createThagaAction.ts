@@ -13,13 +13,13 @@ export function createThagaAction<
   Payload = void,
   ReturnPayload = void,
   Type extends string = string,
-  ExtraArgs = any
+  ExtraArgs extends Array<any> = any
 >(
   type: Type,
   worker: (
     paylod: Payload,
     action: PayloadAction<Payload, Type, ThagaMetaData>,
-    ...args: ExtraArgs[]
+    ...args: ExtraArgs
   ) => Generator<any, ReturnPayload, unknown>
 ) {
   const cancelled = createAction(
@@ -82,7 +82,7 @@ export function createThagaAction<
 
   actionCreator.worker = function* (
     initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>,
-    ...args: any[]
+    ...args: ExtraArgs
   ) {
     try {
       const result: ReturnPayload = yield call(
