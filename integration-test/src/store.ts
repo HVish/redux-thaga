@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import { createThagaMiddleware } from 'redux-thaga';
+import { createThagaMiddleware } from '@hvish/redux-thaga';
 
 import { tasksWorker, tasksReducer } from './reducer';
 

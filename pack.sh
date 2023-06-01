@@ -1,5 +1,5 @@
 VERSION=$(npm run version --silent);
-FILE=redux-thaga-$VERSION.tgz;
+FILE=hvish-redux-thaga-$VERSION.tgz;
 
 rm -f redux-thaga-*.tgz;
 
