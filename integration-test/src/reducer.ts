@@ -6,7 +6,7 @@ import {
   EntityState,
 } from '@reduxjs/toolkit';
 import { call, takeLatest } from 'redux-saga/effects';
-import { createThagaAction } from 'redux-thaga';
+import { createThagaAction } from '@hvish/redux-thaga';
 import { delay } from './uitls';
 
 export interface Task {
