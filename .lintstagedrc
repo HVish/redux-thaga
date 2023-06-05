@@ -1,0 +1,6 @@
+{
+  "src/**/*.{ts,tsx}": ["prettier --write"],
+  "**/*.md": ["prettier --write"],
+  "integration-test/src/**/*.{ts,tsx}": ["prettier --write"],
+  "integration-test/**/*.md": ["prettier --write"]
+}
