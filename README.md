@@ -35,7 +35,8 @@ const taskApi = async () => {
 
 export const fetchTasks = createThagaAction(
   'fetchTasks',
-  function* fetchTasksWorker() { // arguments: (actionPayload, action, ...restArgs)
+  function* fetchTasksWorker() {
+    // arguments: (actionPayload, action, ...restArgs)
     const tasks = (yield call(taskApi)) as Task[];
     return tasks;
   }
