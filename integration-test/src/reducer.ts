@@ -5,7 +5,7 @@ import {
   createSlice,
   EntityState,
 } from '@reduxjs/toolkit';
-import { call, takeLatest } from 'redux-saga/effects';
+import { call, fork, take } from 'redux-saga/effects';
 import { createThagaAction } from '@hvish/redux-thaga';
 import { delay } from './uitls';
 
@@ -55,9 +55,14 @@ export const { actions, reducer: tasksReducer } = createSlice({
 });
 
 export function* tasksWorker() {
-  try {
-    yield takeLatest(fetchTasks, fetchTasks.worker);
-  } catch (error) {
-    console.log(error);
-  }
+  yield fork(function* () {
+    while (true) {
+      try {
+        const action: ReturnType<typeof fetchTasks> = yield take(fetchTasks);
+        yield call(fetchTasks.worker, action);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  });
 }
