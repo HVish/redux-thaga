@@ -10,7 +10,7 @@ npm pack;
 cd integration-test;
 
 echo "removing previous version";
-npm remove redux-thaga;
+npm remove @hvish/redux-thaga;
 
 echo "installing $VERSION(latest) version";
 npm install -f file:../$FILE;
