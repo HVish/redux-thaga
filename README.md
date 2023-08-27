@@ -1,5 +1,7 @@
 # Redux thaga
 
+![tests](https://github.com/HVish/redux-thaga/actions/workflows/tests.yml/badge.svg)
+
 This redux middleware enhances redux-saga with redux-thunk capabilites.
 
 ## Usage
