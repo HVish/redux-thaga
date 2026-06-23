@@ -1,4 +1,4 @@
-import { AnyAction, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { ThagaMetaData } from './types';
 
 export function randomStr() {
@@ -6,8 +6,8 @@ export function randomStr() {
 }
 
 export function isThagaAction<Payload, Type extends string, E = any>(
-  action: AnyAction,
+  action: unknown,
 ): action is PayloadAction<Payload, Type, ThagaMetaData, E> {
-  if (action.meta?.thaga) return true;
-  return false;
+  const meta = (action as { meta?: ThagaMetaData } | null | undefined)?.meta;
+  return !!meta?.thaga;
 }

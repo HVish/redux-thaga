@@ -4,6 +4,8 @@
 
 This redux middleware enhances redux-saga with redux-thunk capabilites.
 
+> **Requires `@reduxjs/toolkit` v2+** and `redux-saga` v1+.
+
 ## Usage
 
 ```ts
@@ -41,7 +43,7 @@ export const fetchTasks = createThagaAction(
     // arguments: (actionPayload, action, ...restArgs)
     const tasks = (yield call(taskApi)) as Task[];
     return tasks;
-  }
+  },
 );
 
 export const { actions, reducer: tasksReducer } = createSlice({
