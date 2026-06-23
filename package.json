@@ -53,7 +53,7 @@
   "author": "Vishnu Singh",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "^17.6.5",
+    "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^17.6.5",
     "@eslint/js": "^10.0.1",
     "@jest/globals": "^30.4.1",
