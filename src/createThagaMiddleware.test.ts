@@ -1,6 +1,7 @@
 import { expect, jest, test } from '@jest/globals';
 import { createThagaMiddleware } from './createThagaMiddleware';
 import { UnknownAction, MiddlewareAPI } from '@reduxjs/toolkit';
+import { ThagaCancelledError, ThagaTimeoutError } from './types';
 import { createThagaAction } from './createThagaAction';
 
 test('should return a redux middleware', () => {
@@ -50,10 +51,10 @@ test('should reject when failed action is dispatched', async () => {
 
   try {
     const promise = dispatch(initiatorAction);
-    dispatch(thagaAction.failed(initiatorAction));
+    dispatch(thagaAction.failed(initiatorAction, new Error('boom')));
     await promise;
   } catch (error) {
-    expect(error).toBeUndefined();
+    expect((error as { message?: string }).message).toBe('boom');
   }
 });
 
@@ -72,9 +73,102 @@ test('should reject when cancelled action is dispatched', async () => {
 
   try {
     const promise = dispatch(initiatorAction);
-    dispatch(thagaAction.cancelled(initiatorAction));
+    dispatch(thagaAction.cancelled(initiatorAction, 'user-aborted'));
     await promise;
   } catch (error) {
-    expect(error).toEqual({ name: 'hello' });
+    expect(error).toBeInstanceOf(ThagaCancelledError);
+    expect((error as ThagaCancelledError).reason).toBe('user-aborted');
+  }
+});
+
+test('promise.cancel() rejects with ThagaCancelledError and dispatches cancelled action', async () => {
+  const thagaAction = createThagaAction('testThaga', function* () {});
+  const thagaMiddleware = createThagaMiddleware();
+
+  const dispatched: UnknownAction[] = [];
+  const dispatch: (action: UnknownAction) => unknown = (action) => {
+    dispatched.push(action);
+    // route follow-up dispatches through the middleware so the cancellation
+    // closes out the pending promise
+    return chain(action);
+  };
+  const api = { dispatch, getState: () => ({}) } as MiddlewareAPI;
+  const next = jest.fn();
+  const chain = thagaMiddleware(api)(next) as (a: UnknownAction) => unknown;
+
+  const initiatorAction = thagaAction();
+  const promise = chain(initiatorAction) as ReturnType<typeof Promise.resolve>;
+
+  (promise as unknown as { cancel: (r?: unknown) => void }).cancel('bye');
+
+  try {
+    await promise;
+    throw new Error('expected rejection');
+  } catch (error) {
+    expect(error).toBeInstanceOf(ThagaCancelledError);
+    expect((error as ThagaCancelledError).reason).toBe('bye');
+  }
+
+  const cancelledAction = dispatched.find(
+    (a) => a.type === 'testThaga/cancelled',
+  );
+  expect(cancelledAction).toBeDefined();
+});
+
+test('failed action rejects the promise with the serialized error', async () => {
+  const thagaAction = createThagaAction('testThaga', function* () {});
+  const thagaMiddleware = createThagaMiddleware();
+
+  const next = jest.fn();
+  const api = {} as MiddlewareAPI;
+  const dispatch = thagaMiddleware(api)(next);
+
+  const initiatorAction = thagaAction();
+  const promise = dispatch(initiatorAction);
+  dispatch(thagaAction.failed(initiatorAction, new Error('kaboom')));
+
+  await expect(promise).rejects.toMatchObject({
+    name: 'Error',
+    message: 'kaboom',
+  });
+});
+
+test('middleware-level timeoutMs rejects with ThagaTimeoutError', async () => {
+  jest.useFakeTimers();
+  try {
+    const thagaAction = createThagaAction('testThaga', function* () {});
+    const thagaMiddleware = createThagaMiddleware({ timeoutMs: 50 });
+
+    const next = jest.fn();
+    const api = {} as MiddlewareAPI;
+    const dispatch = thagaMiddleware(api)(next);
+
+    const promise = dispatch(thagaAction());
+    jest.advanceTimersByTime(50);
+
+    await expect(promise).rejects.toBeInstanceOf(ThagaTimeoutError);
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test('per-action timeoutMs overrides the middleware default', async () => {
+  jest.useFakeTimers();
+  try {
+    const thagaAction = createThagaAction('testThaga', function* () {}, {
+      timeoutMs: 10,
+    });
+    const thagaMiddleware = createThagaMiddleware({ timeoutMs: 10000 });
+
+    const next = jest.fn();
+    const api = {} as MiddlewareAPI;
+    const dispatch = thagaMiddleware(api)(next);
+
+    const promise = dispatch(thagaAction());
+    jest.advanceTimersByTime(10);
+
+    await expect(promise).rejects.toBeInstanceOf(ThagaTimeoutError);
+  } finally {
+    jest.useRealTimers();
   }
 });
