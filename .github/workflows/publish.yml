@@ -27,7 +27,17 @@ jobs:
 
       - name: Read package version
         id: pkg
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # SemVer pre-release identifier (anything with a hyphen, e.g. 1.0.0-rc.0)
+          if [[ "$version" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+            echo "npm_tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "npm_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Fail if tag already exists
         run: |
@@ -38,8 +48,10 @@ jobs:
 
       - name: Publish to npm
         # OIDC + trusted publishing handles auth; --provenance attaches the
-        # cryptographic source attestation visible on npmjs.com.
-        run: npm publish --provenance --access public
+        # cryptographic source attestation visible on npmjs.com. Pre-releases
+        # publish under the `next` dist-tag so `npm install` keeps resolving
+        # to the stable `latest`.
+        run: npm publish --provenance --access public --tag ${{ steps.pkg.outputs.npm_tag }}
 
       - name: Tag and create GitHub Release
         env:
@@ -48,6 +60,11 @@ jobs:
           tag="v${{ steps.pkg.outputs.version }}"
           git tag "$tag"
           git push origin "$tag"
+          prerelease_flag=""
+          if [[ "${{ steps.pkg.outputs.prerelease }}" == "true" ]]; then
+            prerelease_flag="--prerelease"
+          fi
           gh release create "$tag" \
             --title "$tag" \
-            --generate-notes
+            --generate-notes \
+            $prerelease_flag
