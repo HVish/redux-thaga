@@ -13,14 +13,14 @@ export function createThagaAction<
   Payload = void,
   ReturnPayload = void,
   Type extends string = string,
-  ExtraArgs extends Array<any> = any
+  ExtraArgs extends Array<any> = any,
 >(
   type: Type,
   worker: (
     paylod: Payload,
     action: PayloadAction<Payload, Type, ThagaMetaData>,
     ...args: ExtraArgs
-  ) => Generator<any, ReturnPayload, unknown>
+  ) => Generator<any, ReturnPayload, unknown>,
 ) {
   const cancelled = createAction(
     `${type}/cancelled`,
@@ -31,7 +31,7 @@ export function createThagaAction<
         id: initiatorAction.meta.id,
         cancelled: true,
       } as ThagaMetaData,
-    })
+    }),
   );
 
   const failed = createAction(
@@ -43,14 +43,14 @@ export function createThagaAction<
         id: initiatorAction.meta.id,
         failed: true,
       } as ThagaMetaData,
-    })
+    }),
   );
 
   const finished = createAction(
     `${type}/finished`,
     (
       result: ReturnPayload,
-      initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>
+      initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>,
     ) => ({
       payload: result,
       meta: {
@@ -58,7 +58,7 @@ export function createThagaAction<
         id: initiatorAction.meta.id,
         finished: true,
       } as ThagaMetaData,
-    })
+    }),
   );
 
   function actionCreator(payload: Payload) {
@@ -89,7 +89,7 @@ export function createThagaAction<
         worker,
         initiatorAction.payload,
         initiatorAction,
-        ...args
+        ...args,
       );
       yield put(finished(result, initiatorAction));
     } catch (error) {
