@@ -79,7 +79,10 @@ test('cancelled action should have correct flags in meta data', () => {
 
 test('failed action should have correct flags in meta data', () => {
   const thagaAction = thagaActionCreator();
-  const failedAction = thagaActionCreator.failed(thagaAction);
+  const failedAction = thagaActionCreator.failed(
+    thagaAction,
+    new Error('boom'),
+  );
   expect(failedAction.meta).toEqual(
     expect.objectContaining({
       thaga: true,
@@ -128,7 +131,7 @@ test('thaga-worker should dispatch failed action and forward the error', () => {
   );
 
   expect(saga.throw(error).value).toEqual(
-    put(thagaActionCreator.failed(thagaAction)),
+    put(thagaActionCreator.failed(thagaAction, error)),
   );
 
   saga.next();

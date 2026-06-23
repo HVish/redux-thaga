@@ -6,8 +6,18 @@ import {
   put,
 } from 'redux-saga/effects';
 
-import { ThagaMetaData } from './types';
+import { SerializedError, ThagaMetaData } from './types';
 import { thagaConfig } from './config';
+import { serializeError } from './utils';
+
+export interface CreateThagaActionOptions {
+  /**
+   * Per-action timeout in milliseconds. If set, the middleware rejects the
+   * dispatched Promise with `ThagaTimeoutError` if no terminal action arrives
+   * within this window. Overrides the middleware-level `timeoutMs` default.
+   */
+  timeoutMs?: number;
+}
 
 export function createThagaAction<
   Payload = void,
@@ -21,11 +31,15 @@ export function createThagaAction<
     action: PayloadAction<Payload, Type, ThagaMetaData>,
     ...args: ExtraArgs
   ) => Generator<any, ReturnPayload, unknown>,
+  options: CreateThagaActionOptions = {},
 ) {
   const cancelled = createAction(
     `${type}/cancelled`,
-    (initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>) => ({
-      payload: initiatorAction.payload,
+    (
+      initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>,
+      reason?: unknown,
+    ) => ({
+      payload: reason,
       meta: {
         thaga: true,
         id: initiatorAction.meta.id,
@@ -36,8 +50,11 @@ export function createThagaAction<
 
   const failed = createAction(
     `${type}/failed`,
-    (initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>) => ({
-      payload: initiatorAction.payload,
+    (
+      initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>,
+      error: unknown,
+    ) => ({
+      payload: serializeError(error) as SerializedError,
       meta: {
         thaga: true,
         id: initiatorAction.meta.id,
@@ -62,10 +79,12 @@ export function createThagaAction<
   );
 
   function actionCreator(payload: Payload) {
+    const meta: ThagaMetaData = { thaga: true, id: thagaConfig.getId() };
+    if (options.timeoutMs !== undefined) meta.timeoutMs = options.timeoutMs;
     const action: PayloadAction<Payload, Type, ThagaMetaData> = {
       type: type,
       payload,
-      meta: { thaga: true, id: thagaConfig.getId() },
+      meta,
     };
     return action;
   }
@@ -93,7 +112,7 @@ export function createThagaAction<
       );
       yield put(finished(result, initiatorAction));
     } catch (error) {
-      yield put(failed(initiatorAction));
+      yield put(failed(initiatorAction, error));
       throw error;
     } finally {
       if ((yield cancelledEffect()) as CancelledEffect) {
