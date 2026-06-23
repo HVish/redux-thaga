@@ -12,6 +12,8 @@
     "noImplicitOverride": true,
     "skipLibCheck": true,
     "noEmit": true,
+    // TODO: remove once rollup-plugin-dts (transitive via tsup) stops setting
+    // the deprecated `baseUrl` option. Without this, dts emit fails on TS 6.
     "ignoreDeprecations": "6.0"
   },
   "include": ["src"],
