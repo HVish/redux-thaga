@@ -16,7 +16,7 @@ export default defineConfig((options) => {
       outExtension: () => ({ js: '.mjs' }),
       dts: true,
       clean: true,
-      onSuccess() {
+      async onSuccess() {
         fs.copyFileSync(
           'dist/redux-thaga.mjs',
           'dist/redux-thaga.legacy-esm.js'
@@ -28,6 +28,7 @@ export default defineConfig((options) => {
       format: 'cjs',
       outDir: './dist/cjs/',
       outExtension: () => ({ js: '.cjs' }),
+      dts: true,
     },
   ];
 });

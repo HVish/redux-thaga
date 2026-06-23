@@ -60,7 +60,7 @@ test('should reject when failed action is dispatched', async () => {
 test('should reject when cancelled action is dispatched', async () => {
   const thagaAction = createThagaAction(
     'testThaga',
-    function* (arg: { name: string }) {}
+    function* (_arg: { name: string }) {}
   );
   const thagaMiddleware = createThagaMiddleware();
 

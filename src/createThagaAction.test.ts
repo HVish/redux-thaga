@@ -6,15 +6,15 @@ import { Action } from '@reduxjs/toolkit';
 const thagaName = 'thagaAction';
 
 function* actionWorker(
-  payload: void,
-  action: Action,
-  extraArgs1: string,
-  extraArgs2: number
+  _payload: void,
+  _action: Action,
+  _extraArgs1: string,
+  _extraArgs2: number
 ) {
   yield 1;
 }
 
-let thagaActionCreator = createThagaAction(thagaName, actionWorker);
+const thagaActionCreator = createThagaAction(thagaName, actionWorker);
 
 function expectThagaActionCreator(actionCreator: any, ...args: any[]) {
   expect(typeof actionCreator).toBe('function');

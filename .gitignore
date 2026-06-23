@@ -1,5 +1,5 @@
 .DS_Store
 node_modules
 dist
-hvish-redux-thaga-*.tgz
+*.tgz
 coverage
