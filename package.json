@@ -57,7 +57,7 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^10.0.1",
     "@jest/globals": "^30.4.1",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^2.12.0",
     "@swc/core": "^1.15.43",
     "@swc/jest": "^0.2.39",
     "eslint": "^10.5.0",
