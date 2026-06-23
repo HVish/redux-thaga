@@ -1,6 +1,10 @@
 # Redux thaga
 
-![tests](https://github.com/HVish/redux-thaga/actions/workflows/tests.yml/badge.svg)
+[![npm version](https://img.shields.io/npm/v/@hvish/redux-thaga.svg)](https://www.npmjs.com/package/@hvish/redux-thaga)
+[![npm downloads](https://img.shields.io/npm/dm/@hvish/redux-thaga.svg)](https://www.npmjs.com/package/@hvish/redux-thaga)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@hvish/redux-thaga)](https://bundlephobia.com/package/@hvish/redux-thaga)
+[![license](https://img.shields.io/npm/l/@hvish/redux-thaga.svg)](https://github.com/HVish/redux-thaga/blob/main/LICENSE)
+[![tests](https://github.com/HVish/redux-thaga/actions/workflows/tests.yml/badge.svg)](https://github.com/HVish/redux-thaga/actions/workflows/tests.yml)
 
 This redux middleware enhances redux-saga with redux-thunk capabilites.
 
