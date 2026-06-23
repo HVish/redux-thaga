@@ -17,7 +17,7 @@ export interface Task {
 
 const taskAdapter = createEntityAdapter<Task>();
 
-export const allTasksSelector = (state: { tasks: EntityState<Task> }) =>
+export const allTasksSelector = (state: { tasks: EntityState<Task, string> }) =>
   taskAdapter.getSelectors().selectAll(state.tasks);
 
 const taskApi = async (shouldFail: boolean) => {
@@ -33,7 +33,7 @@ export const fetchTasks = createThagaAction(
   function* fetchTasksWorker({ shouldFail }: { shouldFail: boolean }) {
     const tasks = (yield call(taskApi, shouldFail)) as Task[];
     return tasks;
-  }
+  },
 );
 
 export const { actions, reducer: tasksReducer } = createSlice({
@@ -43,7 +43,7 @@ export const { actions, reducer: tasksReducer } = createSlice({
     addTask(state, action: PayloadAction<Task>) {
       taskAdapter.addOne(state, action.payload);
     },
-    updateTask(state, action: PayloadAction<Update<Task>>) {
+    updateTask(state, action: PayloadAction<Update<Task, string>>) {
       taskAdapter.updateOne(state, action.payload);
     },
   },
