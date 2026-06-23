@@ -1,7 +1,7 @@
 VERSION=$(npm run version --silent);
 FILE=hvish-redux-thaga-$VERSION.tgz;
 
-rm -f redux-thaga-*.tgz;
+rm -f hvish-redux-thaga-*.tgz;
 
 echo "Creating build for $FILE";
 npm run build;

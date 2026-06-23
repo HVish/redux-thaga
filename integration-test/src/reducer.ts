@@ -5,7 +5,7 @@ import {
   createSlice,
   EntityState,
 } from '@reduxjs/toolkit';
-import { call, fork, take } from 'redux-saga/effects';
+import { all, call, takeLatest } from 'redux-saga/effects';
 import { createThagaAction } from '@hvish/redux-thaga';
 import { delay } from './uitls';
 
@@ -24,7 +24,7 @@ const taskApi = async (shouldFail: boolean) => {
   const response = await fetch('/tasks.json');
   const tasks: Task[] = await response.json();
   await delay(2000);
-  if (shouldFail) throw new Error('Test error');
+  if (shouldFail) throw new Error('Test error: API rejected the request');
   return tasks;
 };
 
@@ -34,6 +34,19 @@ export const fetchTasks = createThagaAction(
     const tasks = (yield call(taskApi, shouldFail)) as Task[];
     return tasks;
   },
+);
+
+/**
+ * Manual-test thaga that takes ~5s on purpose. Configured with a per-action
+ * timeoutMs of 1500ms so dispatching it always rejects with `ThagaTimeoutError`.
+ */
+export const slowFetchTasks = createThagaAction(
+  'slowFetchTasks',
+  function* slowWorker() {
+    yield call(delay, 5000);
+    return [] as Task[];
+  },
+  { timeoutMs: 1500 },
 );
 
 export const { actions, reducer: tasksReducer } = createSlice({
@@ -55,14 +68,11 @@ export const { actions, reducer: tasksReducer } = createSlice({
 });
 
 export function* tasksWorker() {
-  yield fork(function* () {
-    while (true) {
-      try {
-        const action: ReturnType<typeof fetchTasks> = yield take(fetchTasks);
-        yield call(fetchTasks.worker, action);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  });
+  // `takeLatest` cancels the previous worker if a new dispatch lands. That's
+  // what makes the manual "Cancel In-Flight" demo actually stop the saga work
+  // (vs. just rejecting the caller's Promise).
+  yield all([
+    takeLatest(fetchTasks, fetchTasks.worker),
+    takeLatest(slowFetchTasks, slowFetchTasks.worker),
+  ]);
 }
