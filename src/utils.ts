@@ -6,7 +6,7 @@ export function randomStr() {
 }
 
 export function isThagaAction<Payload, Type extends string, E = any>(
-  action: AnyAction
+  action: AnyAction,
 ): action is PayloadAction<Payload, Type, ThagaMetaData, E> {
   if (action.meta?.thaga) return true;
   return false;

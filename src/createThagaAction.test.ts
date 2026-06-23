@@ -9,7 +9,7 @@ function* actionWorker(
   _payload: void,
   _action: Action,
   _extraArgs1: string,
-  _extraArgs2: number
+  _extraArgs2: number,
 ) {
   yield 1;
 }
@@ -33,7 +33,7 @@ function expectThagaActionCreator(actionCreator: any, ...args: any[]) {
     expect.objectContaining({
       id: expect.any(String),
       thaga: true,
-    })
+    }),
   );
 }
 
@@ -73,7 +73,7 @@ test('cancelled action should have correct flags in meta data', () => {
     expect.objectContaining({
       thaga: true,
       cancelled: true,
-    })
+    }),
   );
 });
 
@@ -84,7 +84,7 @@ test('failed action should have correct flags in meta data', () => {
     expect.objectContaining({
       thaga: true,
       failed: true,
-    })
+    }),
   );
 });
 
@@ -95,7 +95,7 @@ test('finished action should have correct flags in meta data', () => {
     expect.objectContaining({
       thaga: true,
       finished: true,
-    })
+    }),
   );
 });
 
@@ -107,11 +107,11 @@ test('thaga-worker should dispatch finished action', () => {
   const saga = thagaActionCreator.worker(thagaAction, extraArgs1, extraArgs2);
 
   expect(saga.next().value).toEqual(
-    call(actionWorker, undefined, thagaAction, extraArgs1, extraArgs2)
+    call(actionWorker, undefined, thagaAction, extraArgs1, extraArgs2),
   );
 
   expect(saga.next().value).toEqual(
-    put(thagaActionCreator.finished(undefined, thagaAction))
+    put(thagaActionCreator.finished(undefined, thagaAction)),
   );
 });
 
@@ -124,11 +124,11 @@ test('thaga-worker should dispatch failed action and forward the error', () => {
   const error = new Error('test error');
 
   expect(saga.next().value).toEqual(
-    call(actionWorker, undefined, thagaAction, extraArgs1, extraArgs2)
+    call(actionWorker, undefined, thagaAction, extraArgs1, extraArgs2),
   );
 
   expect(saga.throw(error).value).toEqual(
-    put(thagaActionCreator.failed(thagaAction))
+    put(thagaActionCreator.failed(thagaAction)),
   );
 
   saga.next();
