@@ -16,7 +16,7 @@ import {
   EntityState,
 } from '@reduxjs/toolkit';
 import { call, takeLatest } from 'redux-saga/effects';
-import { createThagaAction } from 'redux-thaga';
+import { createThagaAction } from '@hvish/redux-thaga';
 
 export interface Task {
   id: string;
@@ -75,7 +75,7 @@ export function* tasksWorker() {
 // file: store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import { createThagaMiddleware } from 'redux-thaga';
+import { createThagaMiddleware } from '@hvish/redux-thaga';
 
 import { tasksWorker, tasksReducer } from './reducer';
 

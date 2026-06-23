@@ -19,7 +19,7 @@ export function createThagaMiddleware<DispatchExt, S, D extends Dispatch>({
     thagaConfig.setIdFn(getId);
   }
 
-  return (api) => (next) => (action: Action) => {
+  return (_api) => (next) => (action: Action) => {
     const result = next(action);
 
     if (!isThagaAction(action)) return result;
