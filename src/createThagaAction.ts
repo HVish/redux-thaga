@@ -77,7 +77,7 @@ export function createThagaAction<
   actionCreator.type = type;
   actionCreator.toString = () => type;
 
-  actionCreator.match = (action: Action<unknown>): action is PayloadAction =>
+  actionCreator.match = (action: Action): action is PayloadAction =>
     action.type === type;
 
   actionCreator.worker = function* (

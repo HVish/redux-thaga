@@ -1,4 +1,4 @@
-import { Action, Dispatch, Middleware } from '@reduxjs/toolkit';
+import { Dispatch, Middleware } from '@reduxjs/toolkit';
 import { thagaConfig } from './config';
 import { isThagaAction } from './utils';
 
@@ -19,7 +19,7 @@ export function createThagaMiddleware<DispatchExt, S, D extends Dispatch>({
     thagaConfig.setIdFn(getId);
   }
 
-  return (_api) => (next) => (action: Action) => {
+  return (_api) => (next) => (action) => {
     const result = next(action);
 
     if (!isThagaAction(action)) return result;
