@@ -16,10 +16,24 @@ function* actionWorker(
 
 const thagaActionCreator = createThagaAction(thagaName, actionWorker);
 
-function expectThagaActionCreator(actionCreator: any, ...args: any[]) {
+type ThagaActionCreatorLike = {
+  type: string;
+  toString: () => string;
+  match: (action: Action) => boolean;
+} & ((...args: never[]) => { type: string; meta?: unknown });
+
+function expectThagaActionCreator(
+  actionCreator: ThagaActionCreatorLike,
+  ...args: unknown[]
+) {
   expect(typeof actionCreator).toBe('function');
 
-  const action = actionCreator(...args);
+  const action = (
+    actionCreator as unknown as (...args: unknown[]) => {
+      type: string;
+      meta?: unknown;
+    }
+  )(...args);
 
   expect(actionCreator).toHaveProperty('match');
   expect(actionCreator.match(action)).toBe(true);

@@ -6,7 +6,7 @@ import {
   put,
 } from 'redux-saga/effects';
 
-import { SerializedError, ThagaMetaData } from './types';
+import type { ThagaInitiatorAction, ThagaMetaData } from './types';
 import { thagaConfig } from './config';
 import { serializeError } from './utils';
 
@@ -23,14 +23,14 @@ export function createThagaAction<
   Payload = void,
   ReturnPayload = void,
   Type extends string = string,
-  ExtraArgs extends Array<any> = any,
+  ExtraArgs extends readonly unknown[] = [],
 >(
   type: Type,
   worker: (
     paylod: Payload,
     action: PayloadAction<Payload, Type, ThagaMetaData>,
     ...args: ExtraArgs
-  ) => Generator<any, ReturnPayload, unknown>,
+  ) => Generator<unknown, ReturnPayload, unknown>,
   options: CreateThagaActionOptions = {},
 ) {
   const cancelled = createAction(
@@ -44,7 +44,7 @@ export function createThagaAction<
         thaga: true,
         id: initiatorAction.meta.id,
         cancelled: true,
-      } as ThagaMetaData,
+      },
     }),
   );
 
@@ -54,12 +54,12 @@ export function createThagaAction<
       initiatorAction: PayloadAction<Payload, Type, ThagaMetaData>,
       error: unknown,
     ) => ({
-      payload: serializeError(error) as SerializedError,
+      payload: serializeError(error),
       meta: {
         thaga: true,
         id: initiatorAction.meta.id,
         failed: true,
-      } as ThagaMetaData,
+      },
     }),
   );
 
@@ -74,11 +74,13 @@ export function createThagaAction<
         thaga: true,
         id: initiatorAction.meta.id,
         finished: true,
-      } as ThagaMetaData,
+      },
     }),
   );
 
-  function actionCreator(payload: Payload) {
+  function actionCreator(
+    payload: Payload,
+  ): ThagaInitiatorAction<Payload, ReturnPayload, Type> {
     const meta: ThagaMetaData = { thaga: true, id: thagaConfig.getId() };
     if (options.timeoutMs !== undefined) meta.timeoutMs = options.timeoutMs;
     const action: PayloadAction<Payload, Type, ThagaMetaData> = {
@@ -104,12 +106,12 @@ export function createThagaAction<
     ...args: ExtraArgs
   ) {
     try {
-      const result: ReturnPayload = yield call(
+      const result = (yield call(
         worker,
         initiatorAction.payload,
         initiatorAction,
         ...args,
-      );
+      )) as ReturnPayload;
       yield put(finished(result, initiatorAction));
     } catch (error) {
       yield put(failed(initiatorAction, error));

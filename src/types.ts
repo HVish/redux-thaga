@@ -1,3 +1,5 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
+
 export interface ThagaMetaData {
   thaga: true;
   id: string;
@@ -18,13 +20,23 @@ export interface SerializedError {
   code?: string;
 }
 
+function stringifyReason(reason: unknown): string {
+  if (typeof reason === 'string') return reason;
+  if (reason instanceof Error) return reason.message;
+  try {
+    return JSON.stringify(reason) ?? String(reason);
+  } catch {
+    return Object.prototype.toString.call(reason);
+  }
+}
+
 export class ThagaCancelledError extends Error {
   override name = 'ThagaCancelledError';
   constructor(public readonly reason?: unknown) {
     super(
       reason === undefined
         ? 'Thaga action was cancelled'
-        : `Thaga action was cancelled: ${String(reason)}`,
+        : `Thaga action was cancelled: ${stringifyReason(reason)}`,
     );
   }
 }
@@ -35,6 +47,29 @@ export class ThagaTimeoutError extends Error {
     super(`Thaga action timed out after ${timeoutMs}ms`);
   }
 }
+
+/**
+ * Phantom property carrier used to thread a thaga worker's return type
+ * through to `dispatch()`. The property is never set at runtime — it exists
+ * only so the compiler can recover `ReturnPayload` from the initiator action.
+ */
+export const THAGA_RETURN: unique symbol = Symbol.for(
+  '@hvish/redux-thaga/return',
+);
+export type THAGA_RETURN = typeof THAGA_RETURN;
+
+/**
+ * A thaga initiator action. Identical at runtime to a `PayloadAction` with
+ * `ThagaMetaData`, but carries a phantom `ReturnPayload` type that
+ * `ThagaDispatch` reads to infer the dispatched Promise's value type.
+ */
+export type ThagaInitiatorAction<
+  Payload,
+  ReturnPayload,
+  Type extends string = string,
+> = PayloadAction<Payload, Type, ThagaMetaData> & {
+  readonly [THAGA_RETURN]?: ReturnPayload;
+};
 
 export interface ThagaPromise<T> extends Promise<T> {
   /**

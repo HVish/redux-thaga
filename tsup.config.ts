@@ -1,5 +1,4 @@
 import { defineConfig, Options } from 'tsup';
-import fs from 'fs';
 
 export default defineConfig((options) => {
   const commonOptions: Partial<Options> = {
@@ -16,12 +15,6 @@ export default defineConfig((options) => {
       outExtension: () => ({ js: '.mjs' }),
       dts: true,
       clean: true,
-      async onSuccess() {
-        fs.copyFileSync(
-          'dist/redux-thaga.mjs',
-          'dist/redux-thaga.legacy-esm.js'
-        );
-      },
     },
     {
       ...commonOptions,

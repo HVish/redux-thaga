@@ -108,7 +108,7 @@ function App() {
 
   const onClick = async () => {
     try {
-      const tasks = (await dispatch(fetchTasks())) as unknown as Task[];
+      const tasks = await dispatch(fetchTasks());
       console.log(tasks);
     } catch (error) {
       console.log('unable to fetch tasks');

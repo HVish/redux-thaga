@@ -7,6 +7,7 @@ import {
   SerializedError,
 } from '@hvish/redux-thaga';
 import { Task, allTasksSelector, fetchTasks, slowFetchTasks } from './reducer';
+import type { AppDispatch } from './store';
 
 type Outcome =
   | { kind: 'idle' }
@@ -35,7 +36,7 @@ function describe(o: Outcome): string {
 
 function App() {
   const tasks = useSelector(allTasksSelector);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [outcome, setOutcome] = useState<Outcome>({ kind: 'idle' });
   const [inFlight, setInFlight] = useState<ThagaPromise<unknown> | null>(null);
 
@@ -66,26 +67,13 @@ function App() {
   };
 
   const onSuccess = () =>
-    handle(
-      'Success',
-      dispatch(
-        fetchTasks({ shouldFail: false }),
-      ) as unknown as ThagaPromise<unknown>,
-    );
+    handle('Success', dispatch(fetchTasks({ shouldFail: false })));
 
   const onFailure = () =>
-    handle(
-      'Failure',
-      dispatch(
-        fetchTasks({ shouldFail: true }),
-      ) as unknown as ThagaPromise<unknown>,
-    );
+    handle('Failure', dispatch(fetchTasks({ shouldFail: true })));
 
   const onSlow = () =>
-    handle(
-      'Slow (per-action timeoutMs=1500)',
-      dispatch(slowFetchTasks()) as unknown as ThagaPromise<unknown>,
-    );
+    handle('Slow (per-action timeoutMs=1500)', dispatch(slowFetchTasks()));
 
   const onCancel = () => {
     if (inFlight) inFlight.cancel('user clicked cancel');

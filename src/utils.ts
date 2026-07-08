@@ -5,7 +5,7 @@ export function randomStr() {
   return (Math.random() + 1).toString(36).substring(7);
 }
 
-export function isThagaAction<Payload, Type extends string, E = any>(
+export function isThagaAction<Payload, Type extends string, E = never>(
   action: unknown,
 ): action is PayloadAction<Payload, Type, ThagaMetaData, E> {
   const meta = (action as { meta?: ThagaMetaData } | null | undefined)?.meta;
@@ -31,7 +31,7 @@ export function serializeError(error: unknown): SerializedError {
     const obj = error as Record<string, unknown>;
     const out: SerializedError = {};
     for (const key of ['name', 'message', 'stack', 'code'] as const) {
-      if (typeof obj[key] === 'string') out[key] = obj[key] as string;
+      if (typeof obj[key] === 'string') out[key] = obj[key];
     }
     if (out.message || out.name) return out;
   }

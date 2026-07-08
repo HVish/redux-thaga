@@ -19,3 +19,5 @@ export const store = configureStore({
 });
 
 sagaMiddleware.run(tasksWorker);
+
+export type AppDispatch = typeof store.dispatch;
