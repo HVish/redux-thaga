@@ -10,7 +10,6 @@
     "url": "https://github.com/HVish/redux-thaga/issues"
   },
   "main": "dist/cjs/redux-thaga.cjs",
-  "module": "dist/redux-thaga.legacy-esm.js",
   "types": "dist/cjs/redux-thaga.d.ts",
   "exports": {
     "./package.json": "./package.json",

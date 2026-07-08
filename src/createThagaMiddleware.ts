@@ -1,13 +1,8 @@
 import { Dispatch, Middleware } from '@reduxjs/toolkit';
 import { thagaConfig } from './config';
 import { isThagaAction } from './utils';
-import {
-  SerializedError,
-  ThagaCancelledError,
-  ThagaMetaData,
-  ThagaPromise,
-  ThagaTimeoutError,
-} from './types';
+import { ThagaCancelledError, ThagaTimeoutError } from './types';
+import type { ThagaMetaData, ThagaPromise } from './types';
 
 export interface CreateThagaMiddlewareOptions {
   /** Unique id generator function; used to correlate initiator and terminal actions. */
@@ -63,7 +58,7 @@ export function createThagaMiddleware<DispatchExt, S, D extends Dispatch>({
         entry.reject(new ThagaCancelledError(action.payload));
       } else {
         // failed: payload is a SerializedError
-        entry.reject(action.payload as SerializedError);
+        entry.reject(action.payload);
       }
 
       return result;
@@ -87,7 +82,7 @@ export function createThagaMiddleware<DispatchExt, S, D extends Dispatch>({
 
     promise.cancel = (reason?: unknown) => {
       if (!pending.has(id)) return;
-      api.dispatch({
+      void api.dispatch({
         type: `${initiatorType}/cancelled`,
         payload: reason,
         meta: {

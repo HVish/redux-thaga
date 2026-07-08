@@ -9,20 +9,38 @@ export default defineConfig([
     'coverage/**',
     'integration-test/**',
     'node_modules/**',
+    'tsup.config.ts',
   ]),
   {
-    files: ['**/*.{js,ts}'],
-    extends: [js.configs.recommended, tseslint.configs.recommended],
+    files: ['**/*.ts'],
+    extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       globals: { ...globals.node },
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     rules: {
-      // TODO: tighten to 'error' and remove remaining `any`s in a follow-up PR
-      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+    },
+  },
+  {
+    files: ['**/*.js'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
+  {
+    // Module-augmentation type parameters must match the augmented interface
+    // verbatim; they're required by interface merging even when unreferenced.
+    files: ['**/augmentation.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {
