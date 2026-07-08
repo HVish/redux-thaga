@@ -128,6 +128,27 @@ function App() {
 export default App;
 ```
 
+## Typed dispatch
+
+Importing anything from `@hvish/redux-thaga` augments Redux's `Dispatch` (and
+redux-thunk's `ThunkDispatch`, which `configureStore` uses by default), so
+dispatching a thaga action returns a fully typed `ThagaPromise` — no casts and
+no store wiring required:
+
+```ts
+const dispatch = useDispatch();
+
+const tasks = await dispatch(fetchTasks()); // inferred as Task[]
+dispatch(fetchTasks()).cancel('user navigated away'); // ThagaPromise<Task[]>
+```
+
+Typed hooks (`useDispatch<AppDispatch>()`) work the same way. Under the hood
+the worker's return type rides along on the initiator action via the phantom
+`THAGA_RETURN` property (see `ThagaInitiatorAction`) — nothing extra exists at
+runtime. The augmentation needs `redux` and `redux-thunk` to be resolvable by
+TypeScript; both are declared as peer dependencies, so a regular install
+already satisfies this (including under pnpm and Yarn PnP).
+
 ## API
 
 ### `createThagaMiddleware(options?)`
@@ -173,6 +194,7 @@ import {
   createThagaMiddleware,
   isThagaAction,
   serializeError,
+  THAGA_RETURN,
   ThagaCancelledError,
   ThagaTimeoutError,
 } from '@hvish/redux-thaga';
@@ -180,6 +202,7 @@ import type {
   CreateThagaActionOptions,
   CreateThagaMiddlewareOptions,
   SerializedError,
+  ThagaInitiatorAction,
   ThagaMetaData,
   ThagaPromise,
 } from '@hvish/redux-thaga';
