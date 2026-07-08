@@ -9,7 +9,6 @@ export default defineConfig([
     'coverage/**',
     'integration-test/**',
     'node_modules/**',
-    'tsup.config.ts',
   ]),
   {
     files: ['**/*.ts'],
@@ -17,7 +16,10 @@ export default defineConfig([
     languageOptions: {
       globals: { ...globals.node },
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // Typed linting for config files living outside tsconfig's `include`.
+          allowDefaultProject: ['tsup.config.ts'],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -29,7 +31,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,mjs}'],
     extends: [js.configs.recommended],
     languageOptions: {
       globals: { ...globals.node },

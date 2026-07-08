@@ -28,12 +28,7 @@ function expectThagaActionCreator(
 ) {
   expect(typeof actionCreator).toBe('function');
 
-  const action = (
-    actionCreator as unknown as (...args: unknown[]) => {
-      type: string;
-      meta?: unknown;
-    }
-  )(...args);
+  const action = actionCreator(...(args as never[]));
 
   expect(actionCreator).toHaveProperty('match');
   expect(actionCreator.match(action)).toBe(true);
