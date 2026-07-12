@@ -1,6 +1,6 @@
 {
   "name": "@hvish/redux-thaga",
-  "version": "1.1.0-rc.0",
+  "version": "1.1.0",
   "description": "redux middleware for redux-saga with redux-thunk capabilities",
   "repository": {
     "type": "git",
